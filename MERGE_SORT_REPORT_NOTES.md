@@ -43,13 +43,13 @@ The recurrence is `T(n) = 2T(n/2) + O(n)`, giving `O(n log n)` time. Auxiliary s
 Source: `MergeSortBenchmark.java`. Input sizes: 1,000; 10,000; 100,000; 1,000,000. Input patterns: Random, Sorted, Reverse. For each case, the program runs 3 warm-up sorts and averages 7 timed sorts. Only the sorting call is timed; cloning the input is outside the timer. Sortedness is checked after each run. Random inputs use a fixed seed derived from the size.
 
 ### Observed results (milliseconds)
-These values were recorded from a local run and are not universal performance guarantees.
+These values are transcribed from the committed `MergeSort_Results.csv` (a separate local benchmark run) and are not universal performance guarantees.
 
 | Input type | 1,000 | 10,000 | 100,000 | 1,000,000 |
 |---|---:|---:|---:|---:|
-| Random | 0.054 | 0.711 | 8.871 | 108.267 |
-| Sorted | 0.066 | 0.262 | 3.097 | 37.598 |
-| Reverse | 0.048 | 0.287 | 3.227 | 37.169 |
+| Random | 0.066 | 0.824 | 8.884 | 105.741 |
+| Sorted | 0.045 | 0.309 | 3.093 | 35.644 |
+| Reverse | 0.044 | 0.324 | 3.362 | 38.535 |
 
 **Interpretation:** Running time increases with input size. The recorded random inputs took longer than sorted/reverse inputs at larger sizes. These are empirical observations from one environment, not a change in Merge Sort's asymptotic complexity. JVM JIT compilation, system load, memory allocation, and timing noise can affect measurements. A fair comparison with Quick Sort must run both algorithms on identical input copies under the same environment and benchmarking methodology.
 
