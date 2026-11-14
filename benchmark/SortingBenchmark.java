@@ -16,7 +16,7 @@ public class SortingBenchmark {
 
     public static void main(String[] args) throws IOException {
 
-        File resultsFolder = new File("../results");
+        File resultsFolder = new File("benchmark/results");
         resultsFolder.mkdirs();
 
         File resultsFile = new File(resultsFolder, "results.csv");
