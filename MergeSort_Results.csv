@@ -1,0 +1,13 @@
+﻿Type,Size,Average_ms
+Random,1000,0.066
+Sorted,1000,0.045
+Reverse,1000,0.044
+Random,10000,0.824
+Sorted,10000,0.309
+Reverse,10000,0.324
+Random,100000,8.884
+Sorted,100000,3.093
+Reverse,100000,3.362
+Random,1000000,105.741
+Sorted,1000000,35.644
+Reverse,1000000,38.535
