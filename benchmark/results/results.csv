@@ -1,0 +1,19 @@
+Size,Dataset,Algorithm,Average Time (ms),Status
+1000,Random,Merge Sort,0.23920000000000002,REAL
+1000,Random,Quick Sort,0.2961,REAL
+1000,Sorted,Merge Sort,0.05352,REAL
+1000,Sorted,Quick Sort,0.01738,REAL
+1000,Reverse,Merge Sort,0.054479999999999994,REAL
+1000,Reverse,Quick Sort,0.03736,REAL
+10000,Random,Merge Sort,2.0467800000000005,REAL
+10000,Random,Quick Sort,1.4300400000000002,REAL
+10000,Sorted,Merge Sort,0.5264,REAL
+10000,Sorted,Quick Sort,0.23396,REAL
+10000,Reverse,Merge Sort,0.59688,REAL
+10000,Reverse,Quick Sort,1.03526,REAL
+100000,Random,Merge Sort,22.71978,REAL
+100000,Random,Quick Sort,17.70554,REAL
+100000,Sorted,Merge Sort,9.04354,REAL
+100000,Sorted,Quick Sort,5.00542,REAL
+100000,Reverse,Merge Sort,8.82404,REAL
+100000,Reverse,Quick Sort,8.682780000000001,REAL
