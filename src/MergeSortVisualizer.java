@@ -5,7 +5,7 @@ import java.util.List;
 
 public class MergeSortVisualizer extends JFrame {
     static class FrameState {
-        int[] order; int left, right, mid; boolean split; String label;
+        int[] order; int left, right, mid; boolean split; boolean partitioned; String label;
         FrameState(int[] a,int l,int r,int m,boolean s,String text){order=a.clone();left=l;right=r;mid=m;split=s;label=text;}
     }
     final List<FrameState> frames=new ArrayList<>();
@@ -88,7 +88,7 @@ public class MergeSortVisualizer extends JFrame {
             quickFrame(a,l,r,r,"COMPARE • "+values[a[j]]+" <= "+pivot+" ?");
             if(values[a[j]]<=pivot){i++;QuickSort.swap(a,i,j);quickFrame(a,l,r,r,"SWAP • Move element into left partition");}
         }
-        QuickSort.swap(a,i+1,r);quickFrame(a,l,r,i+1,"PARTITION • Pivot "+pivot+" fixed at position "+(i+2));
+        QuickSort.swap(a,i+1,r);quickFrame(a,l,r,i+1,"PARTITION • Pivot "+pivot+" fixed at position "+(i+2));frames.get(frames.size()-1).partitioned=true;
         quickSortTrace(a,l,i);quickSortTrace(a,i+2,r);
     }
     void refresh(){refreshLabel();canvas.repaint();}
@@ -106,12 +106,27 @@ public class MergeSortVisualizer extends JFrame {
                 g.setColor(new Color(42,67,102,90));g.fillRoundRect(x1,35,x2-x1,baseY-15,18,18);
                 int splitX=margin+(current.mid+1)*spacing-10;g.setColor(new Color(245,181,87));g.setStroke(new BasicStroke(2,BasicStroke.CAP_BUTT,BasicStroke.JOIN_MITER,10,new float[]{8,6},0));g.drawLine(splitX,42,splitX,baseY-10);
             }
+            if(quickMode&&current.partitioned){
+                int leftX=margin+current.left*spacing-10, rightX=margin+(current.right+1)*spacing-10;
+                int pivotX=margin+current.mid*spacing+spacing/2;
+                int gap=spacing/2-2;
+                g.setColor(new Color(42,67,102,90));
+                if(current.left<current.mid)g.fillRoundRect(leftX,48,pivotX-gap-leftX,baseY-42,18,18);
+                if(current.mid<current.right)g.fillRoundRect(pivotX+gap,48,rightX-pivotX-gap,baseY-42,18,18);
+                g.setColor(new Color(245,181,87));g.setStroke(new BasicStroke(2,BasicStroke.CAP_BUTT,BasicStroke.JOIN_MITER,10,new float[]{8,6},0));
+                g.drawLine(pivotX-gap,48,pivotX-gap,baseY+10);g.drawLine(pivotX+gap,48,pivotX+gap,baseY+10);
+                g.setFont(new Font("SansSerif",Font.BOLD,12));
+                if(current.left<current.mid)g.drawString("≤ Pivot",leftX+8,42);
+                if(current.mid<current.right)g.drawString("> Pivot",pivotX+gap+8,42);
+                g.drawString("PIVOT",pivotX-18,baseY+32);
+            }
             for(int id=0;id<n;id++){
                 double pos=oldPos[id]+(newPos[id]-oldPos[id])*eased;
                 int x=(int)(margin+pos*spacing+(spacing-barW)/2);int height=(int)(Math.max(16,values[id]/(double)max*maxH));
                 boolean active=newPos[id]>=current.left&&newPos[id]<=current.right;
-                int shift= current.split&&active ? (newPos[id]<=current.mid?-18:18):0;
-                int y=baseY-height+(int)(shift*eased)- (step>0&&progress<1?(int)(Math.sin(Math.PI*progress)*20):0);
+                int shift= current.split&&active ? (newPos[id]<=current.mid?-6:6):0;
+                if(quickMode&&current.partitioned&&active){x+=(int)((newPos[id]<current.mid?-7:newPos[id]>current.mid?7:0)*eased); }
+                int y=baseY-height+(int)(shift*eased)- (step>0&&progress<1?(int)(Math.sin(Math.PI*progress)*4):0);
                 Color c=step==frames.size()-1?new Color(45,204,147):(quickMode&&newPos[id]==current.mid||current.split&&active)?new Color(245,181,87):active?new Color(70,195,225):new Color(90,114,160);
                 g.setColor(new Color(c.getRed(),c.getGreen(),c.getBlue(),45));g.fillRoundRect(x-4,y-4,barW+8,height+8,16,16);
                 g.setColor(c);g.fillRoundRect(x,y,barW,height,12,12);
