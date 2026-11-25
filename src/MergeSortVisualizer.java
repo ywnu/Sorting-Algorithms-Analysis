@@ -10,6 +10,7 @@ public class MergeSortVisualizer extends JFrame {
     }
     final List<FrameState> frames=new ArrayList<>();
     int[] values={38,27,43,3,9,82,10};
+    boolean quickMode=false;
     int step=0; double progress=1; boolean playing=false;
     int speed=55; long last=System.nanoTime();
     final Canvas canvas=new Canvas();
@@ -18,15 +19,18 @@ public class MergeSortVisualizer extends JFrame {
     final javax.swing.Timer timer;
     final Color bg=new Color(13,18,33), panel=new Color(23,31,51), fg=new Color(231,239,252);
 
-    MergeSortVisualizer(){
-        super("Merge Sort Visualizer");
+    MergeSortVisualizer(){ this(false, false); }
+    MergeSortVisualizer(boolean quick, boolean unified){
+        super(unified ? "Sorting Algorithms Visualizer" : quick ? "Quick Sort Visualizer" : "Merge Sort Visualizer");
+        quickMode=quick;
         setIconImage(createAppIcon());
         setDefaultCloseOperation(EXIT_ON_CLOSE);setSize(1050,690);setMinimumSize(new Dimension(780,550));setLocationRelativeTo(null);
         getContentPane().setBackground(bg);setLayout(new BorderLayout());
         JPanel header=new JPanel(new GridLayout(2,1));header.setOpaque(false);header.setBorder(BorderFactory.createEmptyBorder(24,32,12,32));
-        JLabel title=new JLabel("MERGE SORT  /  VISUALIZER");title.setForeground(fg);title.setFont(new Font("SansSerif",Font.BOLD,27));
+        JLabel title=new JLabel(quickMode ? "QUICK SORT  /  VISUALIZER" : "MERGE SORT  /  VISUALIZER");title.setForeground(fg);title.setFont(new Font("SansSerif",Font.BOLD,27));
         JLabel subtitle=new JLabel("DIVIDE & CONQUER  •  Watch elements move into sorted positions");subtitle.setForeground(new Color(138,160,195));subtitle.setFont(new Font("SansSerif",Font.PLAIN,13));
-        header.add(title);header.add(subtitle);add(header,BorderLayout.NORTH);
+        header.add(title);header.add(subtitle);
+        if(unified){ JPanel top=new JPanel(new BorderLayout());top.setOpaque(false);top.add(header,BorderLayout.CENTER); JComboBox<String> mode=new JComboBox<>(new String[]{"Merge Sort","Quick Sort"});mode.setSelectedIndex(quickMode?1:0);mode.setBackground(panel);mode.setForeground(fg); JPanel selector=new JPanel(new FlowLayout(FlowLayout.RIGHT,30,25));selector.setOpaque(false);selector.add(mode);top.add(selector,BorderLayout.EAST);add(top,BorderLayout.NORTH);mode.addActionListener(e->{quickMode=mode.getSelectedIndex()==1;title.setText(quickMode?"QUICK SORT  /  VISUALIZER":"MERGE SORT  /  VISUALIZER");playing=false;play.setText("▶ Play");generate();refresh();}); }else add(header,BorderLayout.NORTH);
         add(canvas,BorderLayout.CENTER);
         JPanel footer=new JPanel(new BorderLayout(12,14));footer.setBackground(bg);footer.setBorder(BorderFactory.createEmptyBorder(12,30,25,30));
         info.setForeground(fg);info.setFont(new Font("SansSerif",Font.BOLD,14));footer.add(info,BorderLayout.NORTH);
@@ -47,7 +51,7 @@ public class MergeSortVisualizer extends JFrame {
             canvas.repaint();refreshLabel();});timer.start();
     }
     void generate(){frames.clear();int[] a=new int[values.length];for(int i=0;i<a.length;i++)a[i]=i;
-        frames.add(new FrameState(a,0,a.length-1,-1,false,"Original array"));sort(a,0,a.length-1);frames.add(new FrameState(a,0,a.length-1,-1,false,"Sorting complete!"));step=0;progress=1;}
+        frames.add(new FrameState(a,0,a.length-1,-1,false,"Original array"));if(quickMode)quickSortTrace(a,0,a.length-1);else sort(a,0,a.length-1);frames.add(new FrameState(a,0,a.length-1,-1,false,"Sorting complete!"));step=0;progress=1;}
     void sort(int[] a,int l,int r){if(l>=r)return;int m=(l+r)/2;
         frames.add(new FrameState(a,l,r,m,true,"DIVIDE  •  Split range "+(l+1)+"–"+(r+1)));
         sort(a,l,m);sort(a,m+1,r);
@@ -56,6 +60,22 @@ public class MergeSortVisualizer extends JFrame {
         while(i<=m)temp[k++]=a[i++];while(j<=r)temp[k++]=a[j++];
         for(int t=0;t<temp.length;t++)a[l+t]=temp[t];
         frames.add(new FrameState(a,l,r,m,false,"MERGE  •  Sorted range "+(l+1)+"–"+(r+1)));
+    }
+    void quickFrame(int[] a,int l,int r,int pivot,String label){frames.add(new FrameState(a,l,r,pivot,false,label));}
+    void quickSortTrace(int[] a,int l,int r){
+        if(l>=r)return;
+        int[] actual=new int[a.length];for(int k=0;k<a.length;k++)actual[k]=values[a[k]];
+        int p=QuickSort.medianOfThreeIndex(actual,l,(l+r)/2,r);
+        int pivot=values[a[p]];
+        quickFrame(a,l,r,p,"PIVOT • Median of three = "+pivot);
+        QuickSort.swap(a,p,r);quickFrame(a,l,r,r,"SWAP • Move pivot to end");
+        int i=l-1;
+        for(int j=l;j<r;j++){
+            quickFrame(a,l,r,r,"COMPARE • "+values[a[j]]+" <= "+pivot+" ?");
+            if(values[a[j]]<=pivot){i++;QuickSort.swap(a,i,j);quickFrame(a,l,r,r,"SWAP • Move element into left partition");}
+        }
+        QuickSort.swap(a,i+1,r);quickFrame(a,l,r,i+1,"PARTITION • Pivot "+pivot+" fixed at position "+(i+2));
+        quickSortTrace(a,l,i);quickSortTrace(a,i+2,r);
     }
     void refresh(){refreshLabel();canvas.repaint();}
     void refreshLabel(){if(frames.isEmpty())return;info.setText(frames.get(step).label+"       |       Step "+(step+1)+" / "+frames.size());}
@@ -78,12 +98,12 @@ public class MergeSortVisualizer extends JFrame {
                 boolean active=newPos[id]>=current.left&&newPos[id]<=current.right;
                 int shift= current.split&&active ? (newPos[id]<=current.mid?-18:18):0;
                 int y=baseY-height+(int)(shift*eased)- (step>0&&progress<1?(int)(Math.sin(Math.PI*progress)*20):0);
-                Color c=step==frames.size()-1?new Color(45,204,147):current.split&&active?new Color(245,181,87):active?new Color(70,195,225):new Color(90,114,160);
+                Color c=step==frames.size()-1?new Color(45,204,147):(quickMode&&newPos[id]==current.mid||current.split&&active)?new Color(245,181,87):active?new Color(70,195,225):new Color(90,114,160);
                 g.setColor(new Color(c.getRed(),c.getGreen(),c.getBlue(),45));g.fillRoundRect(x-4,y-4,barW+8,height+8,16,16);
                 g.setColor(c);g.fillRoundRect(x,y,barW,height,12,12);
                 g.setColor(fg);g.setFont(new Font("SansSerif",Font.BOLD,16));String label=""+values[id];FontMetrics fm=g.getFontMetrics();g.drawString(label,x+(barW-fm.stringWidth(label))/2,y-12);
             }
-            g.setFont(new Font("SansSerif",Font.PLAIN,13));g.setColor(new Color(145,163,194));g.drawString("Gold = dividing     Cyan = merging     Green = sorted",margin,22);
+            g.setFont(new Font("SansSerif",Font.PLAIN,13));g.setColor(new Color(145,163,194));g.drawString(quickMode?"Gold = pivot     Cyan = active partition     Green = sorted":"Gold = dividing     Cyan = merging     Green = sorted",margin,22);
             g.dispose();}
     }
 
@@ -121,5 +141,6 @@ private Image createAppIcon() {
     return image;
 }
 
+    @Override public void dispose(){if(timer!=null)timer.stop();super.dispose();}
     public static void main(String[] args){SwingUtilities.invokeLater(()->new MergeSortVisualizer().setVisible(true));}
 }

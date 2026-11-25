@@ -5,16 +5,18 @@
 Shaqra University — Design and Analysis of Algorithms
 
 ## Overview
-A team project implementing, verifying and comparing two divide-and-conquer sorting algorithms, with an interactive Swing Merge Sort visualizer.
+A team project implementing, verifying and comparing two divide-and-conquer sorting algorithms, with interactive Swing visualizers for both algorithms.
 
 ## Run the project
 From the repository root, with a JDK installed:
 
 ```sh
-javac -encoding UTF-8 -d out src/MergeSort.java src/QuickSort.java src/MergeSortVisualizer.java benchmark/MergeSortBenchmark.java benchmark/SortingBenchmark.java
+javac -encoding UTF-8 -d out src/MergeSort.java src/QuickSort.java src/MergeSortVisualizer.java src/QuickSortVisualizer.java src/SortingVisualizer.java benchmark/MergeSortBenchmark.java benchmark/SortingBenchmark.java
 java -cp out MergeSort
 java -cp out QuickSort
+java -cp out SortingVisualizer
 java -cp out MergeSortVisualizer
+java -cp out QuickSortVisualizer
 java -cp out MergeSortBenchmark
 java -cp out SortingBenchmark
 ```
@@ -41,3 +43,6 @@ Both algorithms were tested on random, sorted and reverse inputs of 1,000, 10,00
 - Hanan — comparative benchmark, results and charts
 
 Original feature branches retain the original submissions. Standalone benchmark timings should not be compared directly with the controlled comparative experiment.
+
+## Interactive visualization
+Launch `SortingVisualizer` to switch between Merge Sort and Quick Sort using the same controls and palette. Quick Sort traces median-of-three pivot selection, Lomuto comparisons, swaps and final pivot placement. Both visualizers use separate educational traces, not timed benchmark execution.
