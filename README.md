@@ -1,59 +1,43 @@
-# Sorting Algorithms Analysis — Merge Sort vs Quick Sort
+# Sorting Algorithms Analysis
 
-Java project comparing Merge Sort and Quick Sort with correctness tests, benchmarks, graphs and supporting reports.
+**Merge Sort vs. Quick Sort | Java**
 
-## Project structure
+Shaqra University — Design and Analysis of Algorithms
 
-- `MergeSort.java`: Deem's standalone Merge Sort implementation and correctness tests.
-- `MergeSortBenchmark.java`: Deem's standalone Merge Sort benchmark.
-- `MergeSortVisualizer.java`: Deem's Swing visualization.
-- `MergeSort_Results.csv`, `MergeSort_Output.txt`: Deem's saved benchmark and test evidence.
-- `MERGE_SORT_REPORT_SECTION.md`, `MERGE_SORT_REPORT_NOTES.md`, `MERGE_SORT_PRESENTATION.md`: Merge Sort report and presentation drafts.
-- `benchmark/MergeSort.java`, `benchmark/QuickSort.java`, `benchmark/SortingBenchmark.java`: Hanan's integrated comparison sources (Quick Sort code matches Aseel's implementation).
-- `benchmark/results/`: comparison CSV, plotting script and graphs.
-- `benchmark/screenshots/`: recorded execution screenshots.
-- `anlays proj2/`: Aseel's original Quick Sort source, report PDF, pseudocode image and text report (kept unchanged for attribution).
-- `analys proj.zip`: Aseel's original archive, retained as submitted.
+## Overview
+A team project implementing, verifying and comparing two divide-and-conquer sorting algorithms, with an interactive Swing Merge Sort visualizer.
 
-## Run the programs
+## Run the project
+From the repository root, with a JDK installed:
 
-From the repository root with Java JDK installed:
-
-```bash
-javac MergeSort.java MergeSortBenchmark.java MergeSortVisualizer.java
-java MergeSort
-java MergeSortBenchmark
-java MergeSortVisualizer
+```sh
+javac -encoding UTF-8 -d out src/MergeSort.java src/QuickSort.java src/MergeSortVisualizer.java benchmark/MergeSortBenchmark.java benchmark/SortingBenchmark.java
+java -cp out MergeSort
+java -cp out QuickSort
+java -cp out MergeSortVisualizer
+java -cp out MergeSortBenchmark
+java -cp out SortingBenchmark
 ```
 
-For the **integrated comparison**, compile only the files inside `benchmark/` (the root contains another `MergeSort` class with the same name):
+The comparison benchmark overwrites `results/results.csv`. Preserve the recorded results before rerunning if needed. To regenerate charts, install matplotlib and run `python results/plot_results.py`.
 
-```bash
-javac benchmark/MergeSort.java benchmark/QuickSort.java benchmark/SortingBenchmark.java
-java -cp benchmark SortingBenchmark
-```
+## Recorded comparison
+Both algorithms were tested on random, sorted and reverse inputs of 1,000, 10,000 and 100,000 elements. Quick Sort was faster in seven of nine recorded cases; Merge Sort was faster for random 1,000 and reverse 10,000. These are experimental observations, not universal guarantees.
 
-The integrated benchmark writes `benchmark/results/results.csv` when run from the repository root. Existing plots and screenshots are saved experimental artifacts. Re-running the benchmark may produce different timings.
+![Comparison at 100,000 elements](results/sorting_comparison_100000.png)
 
-To run Aseel's standalone Quick Sort source, copy or rename `anlays proj2/QuickSort (1).java` to `QuickSort.java` in a separate directory before compiling, because its public Java class is named `QuickSort`.
+[Recorded CSV](results/results.csv) · [1,000 elements](results/sorting_comparison_1000.png) · [10,000 elements](results/sorting_comparison_10000.png)
 
-## Experiment design
+## Repository layout
+- `src/` — canonical algorithms and visualizer
+- `benchmark/` — standalone and comparative experiments
+- `results/` — recorded measurements, charts and plotting script
+- `screenshots/testing/` — experiment evidence
+- `docs/` — individual documentation and pseudocode
 
-The integrated benchmark tests sizes 1,000 / 10,000 / 100,000 on random, sorted and reverse-sorted arrays, using two warm-up runs and five measured runs for each algorithm. Both algorithms sort clones of the same input; results are checked against Java's `Arrays.sort`. Quick Sort uses median-of-three pivot selection and Lomuto partitioning.
+## Team contributions
+- Deem — Merge Sort, standalone benchmark and visualizer
+- Aseel — Quick Sort and algorithm documentation
+- Hanan — comparative benchmark, results and charts
 
-Deem's standalone benchmark uses a different set of sizes and repetitions. **Do not directly compare times from the standalone and integrated benchmarks as if they came from one controlled experiment.**
-
-## Remaining submission steps
-
-- Recompile and run all programs on the final submission machine.
-- Correct the written comparison conclusion: Merge Sort is faster for random size 1,000 and reverse size 10,000 in the recorded comparison; Quick Sort wins the other seven cases.
-- Assemble and proofread the final combined report and presentation.
-- Verify against the instructor's official rubric before submitting.
-
-## Team branches
-
-- `feature/merge-sort` — Deem
-- `feature/quick-sort` — Aseel
-- `feature/benchmark-comparison` — Hanan
-
-Original feature branches are preserved.
+Original feature branches retain the original submissions. Standalone benchmark timings should not be compared directly with the controlled comparative experiment.

@@ -144,7 +144,7 @@ public class QuickSort {
             double averageTime = (totalTime / 5.0) / 1_000_000.0;
 
             // ===== ADDED (4b): clean printing =====
-            System.out.printf("%d\t%.4f%n", size, averageTime);
+            System.out.printf(java.util.Locale.US, "%d\t%.4f%n", size, averageTime);
         }
     }
 }

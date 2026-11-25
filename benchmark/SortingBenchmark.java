@@ -16,7 +16,7 @@ public class SortingBenchmark {
 
     public static void main(String[] args) throws IOException {
 
-        File resultsFolder = new File("benchmark/results");
+        File resultsFolder = new File("results");
         resultsFolder.mkdirs();
 
         File resultsFile = new File(resultsFolder, "results.csv");
@@ -173,9 +173,9 @@ public class SortingBenchmark {
         saveResult(writer, size, datasetName,
             "Quick Sort", quickTime);
 
-        System.out.printf("Merge Sort: %.4f ms%n", mergeTime);
+        System.out.printf(java.util.Locale.US, "Merge Sort: %.4f ms%n", mergeTime);
 
-        System.out.printf("Quick Sort: %.4f ms%n", quickTime);
+        System.out.printf(java.util.Locale.US, "Quick Sort: %.4f ms%n", quickTime);
 
         System.out.println(
             "Both results verified successfully."
