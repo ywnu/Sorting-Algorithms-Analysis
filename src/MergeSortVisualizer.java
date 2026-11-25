@@ -14,11 +14,21 @@ public class MergeSortVisualizer extends JFrame {
     int step=0; double progress=1; boolean playing=false;
     int speed=55; long last=System.nanoTime();
     final Canvas canvas=new Canvas();
-    final JLabel info=new JLabel(); final JButton play=new JButton("▶ Play");
+    final JLabel info=new JLabel(); final JButton play=new RoundedButton("▶ Play");
     final JSlider slider=new JSlider(10,100,55);
     final javax.swing.Timer timer;
     final Color bg=new Color(13,18,33), panel=new Color(23,31,51), fg=new Color(231,239,252);
 
+    static class RoundedButton extends JButton {
+        RoundedButton(String text){super(text);setContentAreaFilled(false);setOpaque(false);setBorderPainted(false);setFocusPainted(false);setRolloverEnabled(true);setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));}
+        @Override protected void paintComponent(Graphics gg){
+            Graphics2D g=(Graphics2D)gg.create();g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
+            Color c=getBackground();if(getModel().isPressed())c=c.darker();else if(getModel().isRollover())c=c.brighter();
+            g.setColor(c);g.fillRoundRect(0,0,getWidth()-1,getHeight()-1,14,14);
+            g.setColor(getForeground().equals(new Color(70,195,225))?new Color(70,195,225):new Color(60,80,112));
+            g.drawRoundRect(0,0,getWidth()-1,getHeight()-1,14,14);g.dispose();super.paintComponent(gg);
+        }
+    }
     MergeSortVisualizer(){ this(false, false); }
     MergeSortVisualizer(boolean quick, boolean unified){
         super(unified ? "Sorting Algorithms Visualizer" : quick ? "Quick Sort Visualizer" : "Merge Sort Visualizer");
@@ -30,16 +40,16 @@ public class MergeSortVisualizer extends JFrame {
         JLabel title=new JLabel(quickMode ? "QUICK SORT  /  VISUALIZER" : "MERGE SORT  /  VISUALIZER");title.setForeground(fg);title.setFont(new Font("SansSerif",Font.BOLD,27));
         JLabel subtitle=new JLabel("DIVIDE & CONQUER  •  Watch elements move into sorted positions");subtitle.setForeground(new Color(138,160,195));subtitle.setFont(new Font("SansSerif",Font.PLAIN,13));
         header.add(title);header.add(subtitle);
-        if(unified){ JPanel top=new JPanel(new BorderLayout());top.setOpaque(false);top.add(header,BorderLayout.CENTER); JPanel selector=new JPanel(new FlowLayout(FlowLayout.RIGHT,0,25));selector.setOpaque(false); JPanel tabs=new JPanel(new GridLayout(1,2,4,0));tabs.setBackground(panel);tabs.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
-        JButton mergeTab=new JButton("Merge Sort"), quickTab=new JButton("Quick Sort");
-        Runnable style=()->{for(JButton b:new JButton[]{mergeTab,quickTab}){boolean selected=(b==quickTab)==quickMode;b.setBackground(selected?new Color(48,70,98):panel);b.setForeground(selected?new Color(70,195,225):new Color(138,160,195));b.setOpaque(true);b.setContentAreaFilled(true);b.setFocusPainted(false);b.setFont(new Font("SansSerif",Font.BOLD,14));b.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));b.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(selected?new Color(70,195,225):panel,1,true),BorderFactory.createEmptyBorder(10,18,10,18)));}};
+        if(unified){ JPanel top=new JPanel(new BorderLayout());top.setOpaque(false);top.add(header,BorderLayout.CENTER); JPanel selector=new JPanel(new FlowLayout(FlowLayout.RIGHT,0,25));selector.setOpaque(false); JPanel tabs=new JPanel(new GridLayout(1,2,4,0));tabs.setOpaque(false);tabs.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
+        JButton mergeTab=new RoundedButton("Merge Sort"), quickTab=new RoundedButton("Quick Sort");
+        Runnable style=()->{for(JButton b:new JButton[]{mergeTab,quickTab}){boolean selected=(b==quickTab)==quickMode;b.setBackground(selected?new Color(48,70,98):panel);b.setForeground(selected?new Color(70,195,225):new Color(138,160,195));b.setOpaque(false);b.setContentAreaFilled(false);b.setFocusPainted(false);b.setFont(new Font("SansSerif",Font.BOLD,14));b.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));b.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(selected?new Color(70,195,225):panel,1,true),BorderFactory.createEmptyBorder(10,18,10,18)));}};
         java.util.function.Consumer<Boolean> switchMode=q->{if(quickMode==q)return;quickMode=q;title.setText(q?"QUICK SORT  /  VISUALIZER":"MERGE SORT  /  VISUALIZER");playing=false;play.setText("▶ Play");generate();refresh();style.run();};
         mergeTab.addActionListener(e->switchMode.accept(false));quickTab.addActionListener(e->switchMode.accept(true));style.run();tabs.add(mergeTab);tabs.add(quickTab);selector.add(tabs);selector.setBorder(BorderFactory.createEmptyBorder(0,0,0,30));top.add(selector,BorderLayout.EAST);add(top,BorderLayout.NORTH); }else add(header,BorderLayout.NORTH);
         add(canvas,BorderLayout.CENTER);
         JPanel footer=new JPanel(new BorderLayout(12,14));footer.setBackground(bg);footer.setBorder(BorderFactory.createEmptyBorder(12,30,25,30));
         info.setForeground(fg);info.setFont(new Font("SansSerif",Font.BOLD,14));footer.add(info,BorderLayout.NORTH);
         JPanel controls=new JPanel(new FlowLayout(FlowLayout.CENTER,12,2));controls.setOpaque(false);
-        JButton prev=new JButton("◀ Previous"), next=new JButton("Next ▶"), reset=new JButton("↺ Reset"),shuffle=new JButton("⤨ Shuffle");
+        JButton prev=new RoundedButton("◀ Previous"), next=new RoundedButton("Next ▶"), reset=new RoundedButton("↺ Reset"),shuffle=new RoundedButton("⤨ Shuffle");
         for(JButton b:new JButton[]{prev,play,next,reset,shuffle}){b.setBackground(panel);b.setForeground(fg);b.setFocusPainted(false);b.setFont(new Font("SansSerif",Font.BOLD,13));b.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(60,80,112)),BorderFactory.createEmptyBorder(10,15,10,15)));controls.add(b);}
         JLabel speedLabel=new JLabel("Speed");speedLabel.setForeground(fg);controls.add(speedLabel);slider.setOpaque(false);slider.setPreferredSize(new Dimension(120,30));controls.add(slider);
         footer.add(controls,BorderLayout.CENTER);add(footer,BorderLayout.SOUTH);
